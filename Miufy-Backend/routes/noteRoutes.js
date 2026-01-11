@@ -44,4 +44,14 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Delete all notes for a user
+router.delete('/user/:userId', async (req, res) => {
+  try {
+    const result = await Note.deleteMany({ userId: req.params.userId });
+    res.json({ message: `Deleted ${result.deletedCount} notes` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

@@ -1,58 +1,154 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, Dimensions, StatusBar } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Dimensions, StatusBar, Animated } from 'react-native';
 import { router } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
+  // Animation values
+  const logoScale = useRef(new Animated.Value(0.8)).current;
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const titleOpacity = useRef(new Animated.Value(0)).current;
+  const titleTranslate = useRef(new Animated.Value(20)).current;
+  const contentOpacity = useRef(new Animated.Value(0)).current;
+  const contentTranslate = useRef(new Animated.Value(30)).current;
+  const buttonOpacity = useRef(new Animated.Value(0)).current;
+  const buttonTranslate = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    // Staggered animation sequence
+    Animated.sequence([
+      // Logo fade in and scale
+      Animated.parallel([
+        Animated.timing(logoOpacity, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.spring(logoScale, {
+          toValue: 1,
+          tension: 50,
+          friction: 7,
+          useNativeDriver: true,
+        }),
+      ]),
+      // Title fade in
+      Animated.parallel([
+        Animated.timing(titleOpacity, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(titleTranslate, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+      ]),
+      // Content fade in
+      Animated.parallel([
+        Animated.timing(contentOpacity, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentTranslate, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+      ]),
+      // Button fade in
+      Animated.parallel([
+        Animated.timing(buttonOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(buttonTranslate, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+  }, []);
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      
+
+      {/* Background shapes */}
       <View style={styles.topShape} />
       <View style={styles.bottomShape} />
-      <View style={styles.midCircle} />
+      <View style={styles.accentDot} />
 
       <View style={styles.contentContainer}>
-        <View style={styles.logoWrapper}>
-          <View style={styles.logoShadow} />
+        {/* Logo with animation */}
+        <Animated.View
+          style={[
+            styles.logoWrapper,
+            {
+              opacity: logoOpacity,
+              transform: [{ scale: logoScale }],
+            }
+          ]}
+        >
+          <View style={styles.logoGlow} />
           <Image
             source={require('../assets/images/icon.png')}
             style={styles.logo}
           />
-        </View>
+        </Animated.View>
 
-        <View>
+        {/* Title with animation */}
+        <Animated.View
+          style={{
+            opacity: titleOpacity,
+            transform: [{ translateY: titleTranslate }],
+          }}
+        >
           <Text style={styles.title}>Miufy</Text>
-          <Text style={styles.tagline}>Master video knowledge.</Text>
-        </View>
+          <Text style={styles.tagline}>Study smarter, not harder</Text>
+        </Animated.View>
 
-        <View style={styles.textArea}>
+        {/* Content with animation */}
+        <Animated.View
+          style={[
+            styles.textArea,
+            {
+              opacity: contentOpacity,
+              transform: [{ translateY: contentTranslate }],
+            }
+          ]}
+        >
           <Text style={styles.headline}>
-            Transform how you study from videos.
+            Transform how you learn from videos
           </Text>
           <Text style={styles.subHeadline}>
-            Capture insights, organize notes, and boost your learning efficiency.
+            Take timestamped notes, organize your insights, and master any topic with ease.
           </Text>
-        </View>
+        </Animated.View>
       </View>
 
-      <View style={styles.footer}>
+      {/* Button with animation */}
+      <Animated.View
+        style={[
+          styles.footer,
+          {
+            opacity: buttonOpacity,
+            transform: [{ translateY: buttonTranslate }],
+          }
+        ]}
+      >
         <TouchableOpacity
           style={styles.mainButton}
           onPress={() => router.push('/login')}
-          activeOpacity={0.8}
+          activeOpacity={0.85}
         >
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={() => router.push('/register')}
-          activeOpacity={0.6}
-        >
-        </TouchableOpacity>
-      </View>
+      </Animated.View>
     </View>
   );
 }
@@ -61,97 +157,95 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    overflow: 'hidden', 
+    overflow: 'hidden',
   },
   topShape: {
     position: 'absolute',
-    top: -height * 0.15,
-    left: -width * 0.2,
-    width: width * 1.2,
-    height: width * 1.2,
-    borderRadius: width * 0.6,
+    top: -height * 0.18,
+    left: -width * 0.25,
+    width: width * 1.3,
+    height: width * 1.3,
+    borderRadius: width * 0.65,
     backgroundColor: '#41E2BA',
-    opacity: 0.12,
-    transform: [{ scaleX: 1.2 }],
+    opacity: 0.08,
   },
   bottomShape: {
     position: 'absolute',
-    bottom: -height * 0.1,
-    right: -width * 0.2,
-    width: width * 0.8,
-    height: width * 0.8,
-    borderRadius: width * 0.4,
+    bottom: -height * 0.12,
+    right: -width * 0.25,
+    width: width * 0.85,
+    height: width * 0.85,
+    borderRadius: width * 0.425,
+    backgroundColor: '#41E2BA',
+    opacity: 0.1,
+  },
+  accentDot: {
+    position: 'absolute',
+    top: height * 0.35,
+    right: width * 0.08,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#41E2BA',
     opacity: 0.15,
-  },
-  midCircle: {
-    position: 'absolute',
-    top: height * 0.3,
-    right: width * 0.1,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#41E2BA',
-    opacity: 0.2,
   },
   contentContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 40,
-    paddingTop: 60,
+    paddingHorizontal: 35,
+    paddingTop: 40,
   },
   logoWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 30,
+    marginBottom: 25,
   },
-  logoShadow: {
+  logoGlow: {
     position: 'absolute',
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+    width: 130,
+    height: 130,
+    borderRadius: 65,
     backgroundColor: '#41E2BA',
-    opacity: 0.3,
-    transform: [{ translateY: 10 }],
+    opacity: 0.2,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 130,
+    height: 130,
     resizeMode: 'contain',
-    zIndex: 1,
   },
   title: {
-    fontSize: 52,
-    fontWeight: '900',
-    color: '#333',
+    fontSize: 48,
+    fontWeight: '800',
+    color: '#1a1a2e',
     textAlign: 'center',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   tagline: {
-    fontSize: 22,
+    fontSize: 18,
     color: '#41E2BA',
-    fontWeight: '700',
+    fontWeight: '600',
     textAlign: 'center',
-    marginTop: 5,
+    marginTop: 6,
   },
   textArea: {
-    marginTop: 50,
+    marginTop: 45,
+    paddingHorizontal: 10,
   },
   headline: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#1a1a2e',
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: 14,
     lineHeight: 34,
   },
   subHeadline: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#666',
     textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: 10,
+    lineHeight: 23,
+    paddingHorizontal: 5,
   },
   footer: {
     paddingHorizontal: 30,
@@ -162,30 +256,20 @@ const styles = StyleSheet.create({
   mainButton: {
     backgroundColor: '#41E2BA',
     width: '100%',
-    height: 65,
-    borderRadius: 35,
+    height: 58,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 8,
     shadowColor: '#41E2BA',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    marginBottom: 20,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 6,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-    letterSpacing: 0.5,
-  },
-  secondaryButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  secondaryButtonText: {
-    color: '#555',
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '700',
+    letterSpacing: 0.3,
   },
 });
